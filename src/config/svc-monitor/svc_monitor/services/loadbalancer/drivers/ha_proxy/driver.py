@@ -19,6 +19,7 @@ LOADBALANCER_SERVICE_TEMPLATE = [
 class OpencontrailLoadbalancerDriver(
         abstract_driver.ContrailLoadBalancerAbstractDriver):
     def __init__(self, name, manager, api, db, args=None):
+        self._max_instances = 2
         self._name = name
         self._api = api
         self._svc_manager = manager
@@ -100,7 +101,7 @@ class OpencontrailLoadbalancerDriver(
         # set interfaces and ha
         props.set_interface_list(if_list)
         props.set_ha_mode('active-standby')
-        scale_out = ServiceScaleOutType(max_instances=2, auto_scale=False)
+        scale_out = ServiceScaleOutType(max_instances=self._max_instances, auto_scale=True)
         props.set_scale_out(scale_out)
 
         return props
@@ -298,3 +299,9 @@ class OpencontrailLoadbalancerDriver(
 
     def update_health_monitor(self, id, health_monitor):
         pass
+
+class OpencontrailgoldLoadbalancerDriver(OpencontrailLoadbalancerDriver):
+
+    def __init__(self, name, manager, api, db, args=None):
+        super(OpencontrailgoldLoadbalancerDriver, self).__init__(name, manager, api, db, args)
+        self._max_instances=4
